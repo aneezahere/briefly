@@ -1,0 +1,159 @@
+.container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #c5a3ff;
+    text-shadow: 0 2px 10px rgba(197, 163, 255, 0.7);
+  }
+  
+  .logoutButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .logoutButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .transparentBox {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 3rem;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .textareaWrapper {
+    position: relative;
+    width: 100%;
+  }
+  
+  .textarea {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    color: white;
+    resize: vertical;
+    min-height: 150px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    width: 100%;
+    padding-right: 40px; /* Make room for the upload button */
+  }
+  
+  .textarea:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .hiddenFileInput {
+    display: none;
+  }
+  
+  .uploadButton {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .inkIcon {
+    width: 24px;
+    height: 24px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+  }
+  
+  .inkIcon:hover {
+    color: white;
+  }
+  
+  .button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #6a00f4, #0070f3);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0px 8px 15px rgba(0, 112, 243, 0.3);
+  }
+  
+  .button:hover {
+    background: linear-gradient(135deg, #0070f3, #6a00f4);
+    box-shadow: 0px 10px 20px rgba(0, 112, 243, 0.5);
+  }
+  
+  .summaryBox {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: left;
+  }
+  
+  .summaryTitle {
+    font-size: 1.5rem;
+    color: #c5a3ff;
+    margin-bottom: 1rem;
+  }
+  
+  .summaryText {
+    color: #ffffff;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  @media (max-width: 768px) {
+    .header {
+      padding: 1rem;
+    }
+  
+    .logo {
+      font-size: 1.5rem;
+    }
+  
+    .transparentBox {
+      padding: 2rem;
+    }
+  }
