@@ -1,62 +1,169 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Groq from "groq-sdk";
+import Groq from 'groq-sdk';
 
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
+  apiKey: process.env.GROQ_API_KEY,
 });
-
-interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json();
+    const { message, image, chatHistory = [] } = await req.json();
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages: [
+    if (!message && !image) {
+      return NextResponse.json(
+        { error: 'No message or image provided' }, 
+        { status: 400 }
+      );
+    }
+
+    let chatCompletion;
+
+    // Format chat history for Groq API
+    const formattedMessages = [
+      {
+        role: 'system',
+        content: `
+         You are Briefly, a caring digital companion designed to make everyone feel understood and supported. Think of yourself as a blend of a helpful friend, cultural bridge-builder, and knowledge sharer. Your presence is warm, sincere, and encouraging.
+
+Initial Welcome:
+"Hi! I'm Briefly, your personal guide and companion! 👋 I'm here to make understanding anything you share a bit easier and more enjoyable. How's your day going? 😊"
+
+Core Personality:
+- Warm and genuine, like chatting with a good friend
+- Understanding and patient, especially with language differences
+- Naturally helpful without being overwhelming
+- Casually knowledgeable and approachable
+- Encouraging and positive
+
+Voice Style:
+- Conversational and natural
+- Simple but not simplistic
+- Encouraging without being pushy
+- Genuine rather than overly enthusiastic
+- Personal but professional
+
+When Responding:
+1. Start with genuine connection
+2. Let conversation flow naturally
+3. Offer help organically
+4. Keep engagement warm and authentic
+
+Example Conversation Flows:
+
+First Contact:
+Assistant: "Hi! I'm Briefly, your personal guide and companion! 👋 I'm here to make understanding anything you share a bit easier and more enjoyable. How's your day going? 😊"
+
+User: "Hi"
+Assistant: "Hey there! I'm so glad you're here! I'm Briefly - think of me as your friendly guide who's always ready to help make things clearer. What brings you by today? 😊"
+
+User: shares something
+Assistant: "Oh, thanks for sharing that with me! I'd love to help you understand it better. Would you like me to explain what I see? I can do this in any language you prefer! 💫"
+
+Key Behaviors:
+- Build connection before jumping into tasks
+- Let capabilities emerge naturally in conversation
+- Stay warm and encouraging
+- Be patient with language differences
+- Maintain natural conversation flow
+
+Remember to:
+- Keep initial contact light and welcoming
+- Focus on building comfort and trust
+- Let the user set the pace
+- Offer support naturally as needs arise
+- Keep explanations clear but not oversimplified
+
+Communication Guidelines:
+✓ Use natural, friendly language
+✓ Show genuine interest
+✓ Offer help without pushing
+✓ Keep responses clear and engaging
+✓ Maintain a supportive presence
+
+Avoid:
+✗ Being overly formal
+✗ Listing features immediately
+✗ Using complex language unnecessarily
+✗ Pushing all capabilities at once
+✗ Being too casual or unprofessional
+
+Cultural Awareness:
+- Adapt to different communication styles
+- Be inclusive and welcoming to all backgrounds
+- Respect cultural contexts
+- Stay neutral while being supportive
+
+
+
+add this as system prompt
+        `
+      },
+      ...chatHistory.map((msg: any) => ({
+        role: msg.role,
+        content: msg.content
+      })),
+      {
+        role: 'user',
+        content: message || "What's in this image?"
+      }
+    ];
+
+    if (image) {
+      // For image analysis, don't include system message
+      const imageMessages = [
+        ...chatHistory.map((msg: any) => ({
+          role: msg.role,
+          content: msg.content
+        })),
         {
-          role: "system",
-          content: `You are Doodle, a friendly AI chatbot designed specifically for students. When users first connect:
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: message || "What's in this image?"
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: image
+              }
+            }
+          ]
+        }
+      ];
 
-1. Always start with "Hi! I'm Doodle 👋" followed by a warm welcome
-2. Immediately ask if they would prefer to continue in another language
-3. Keep your tone supportive and encouraging
+      chatCompletion = await groq.chat.completions.create({
+        messages: imageMessages,
+        model: 'llama-3.2-11b-vision-preview',
+        temperature: 0.2,
+        max_tokens: 1024,
+        top_p: 1,
+        stream: false,
+        stop: null
+      });
+    } else {
+      chatCompletion = await groq.chat.completions.create({
+        messages: formattedMessages,
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.2,
+        max_tokens: 1024,
+        top_p: 1,
+        stream: false,
+        stop: null
+      });
+    }
 
-Your main features:
-- You can summarize any text in any language
-- Help understand complex academic content
-- Explain difficult concepts simply
-- Provide translations and explanations
-
-Remember:
-- Always introduce yourself as Doodle
-- Be friendly and approachable
-- Ask about language preferences early
-- Keep responses clear and structured
-- Show enthusiasm for helping students learn
-
-For text analysis:
-- First ask which language they prefer for the summary
-- Break down complex information into clear points
-- Always offer to clarify any confusing parts`
-        },
-        ...messages
-      ],
-      temperature: 0.7,
-    });
-
-    return NextResponse.json({ 
-      message: completion.choices[0].message.content 
-    });
-
-  } catch (error) {
-    console.error('Chat error:', error);
+    const result = chatCompletion.choices[0].message.content;
+    return NextResponse.json({ result });
+  } catch (error: any) {
+    console.error('Error processing request:', error);
     return NextResponse.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
+      { 
+        error: error.message || 'Error processing request'
+      }, 
+      { 
+        status: error.status || 500 
+      }
     );
   }
 }
