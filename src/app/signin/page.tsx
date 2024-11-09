@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { signIn, signInWithGoogle } from '../lib/auth';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Spline from '@splinetool/react-spline';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,7 +22,7 @@ export default function SignInPage() {
     try {
       const { error } = await signIn(email, password);
       if (error) throw new Error(error.message);
-      router.push('/home');
+      router.push('/chat');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     }
@@ -30,29 +31,35 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      router.push('/home');
+      router.push('/chat');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Spline background */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <Spline scene="https://prod.spline.design/1dEc0u62qTsMHEzC/scene.splinecode" />
+      </div>
+
+      {/* Content overlay */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md z-10"
       >
         <Link 
           href="/"
-          className="text-2xl font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text block mb-8"
+          className="text-2xl font-semibold text-white block mb-8"
         >
           Lumina
         </Link>
 
-        <div className="bg-white rounded-2xl p-8 shadow-[0_0_50px_rgba(124,58,237,0.1)] border border-gray-100">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Welcome back</h1>
+        <div className="backdrop-blur-md bg-white/10 rounded-2xl p-8 shadow-[0_0_50px_rgba(255,255,255,0.1)] border border-white/20">
+          <h1 className="text-2xl font-bold text-white mb-6">Welcome back</h1>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -61,7 +68,7 @@ export default function SignInPage() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-white/90 border border-white/30 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none transition-all placeholder-gray-500 text-gray-900"
                 required
               />
             </div>
@@ -71,7 +78,7 @@ export default function SignInPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-white/90 border border-white/30 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none transition-all placeholder-gray-500 text-gray-900"
                 required
               />
             </div>
@@ -88,25 +95,24 @@ export default function SignInPage() {
           </form>
 
           {error && (
-            <p className="mt-4 text-sm text-red-600 text-center">
+            <p className="mt-4 text-sm text-red-400 text-center">
               {error}
             </p>
           )}
 
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-white/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">or continue with</span>
+              <span className="px-2 bg-transparent text-white/60">or continue with</span>
             </div>
           </div>
 
           <button
             onClick={handleGoogleSignIn}
-            className="w-full py-3 px-4 bg-white border border-gray-200 rounded-xl font-medium text-gray-700
-              hover:bg-gray-50 transition-all flex items-center justify-center gap-2
-              hover:border-gray-300"
+            className="w-full py-3 px-4 bg-white/90 border border-white/30 rounded-xl font-medium text-gray-700
+              hover:bg-white/95 transition-all flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -117,11 +123,11 @@ export default function SignInPage() {
             Google
           </button>
 
-          <p className="mt-6 text-center text-sm text-gray-500">
+          <p className="mt-6 text-center text-sm text-white/80">
             Don't have an account?{' '}
             <Link 
               href="/signup"
-              className="text-violet-600 hover:text-violet-700 font-medium"
+              className="text-violet-400 hover:text-violet-300 font-medium"
             >
               Sign up
             </Link>

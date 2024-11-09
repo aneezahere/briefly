@@ -1,112 +1,95 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { Inter } from 'next/font/google';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Globe2, Brain, BookOpen } from 'lucide-react';
-
-const inter = Inter({ subsets: ['latin'] });
+import React from 'react'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function LandingPage() {
   return (
-    <div className={`min-h-screen bg-white ${inter.className}`}>
-      {/* Simple Header */}
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-sm z-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-20">
-            <h1 className="text-2xl font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text">
-              Lumina
-            </h1>
-          </div>
-        </div>
-      </header>
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Spline Background - Using exact URL provided */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <iframe 
+          src='https://my.spline.design/glassfluidpastelsemplification-8ca24cd1982a4a3a4580a85c0a70cab4/'
+          frameBorder='0' 
+          width='100%' 
+          height='100%'
+          title="Background Animation"
+        />
+      </div>
 
-      {/* Hero Section */}
-      <main className="flex items-center justify-center min-h-screen px-6">
-        <div className="text-center space-y-8 max-w-3xl mx-auto pt-20">
+      {/* Main Content Container */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="w-full pt-6 pb-2">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-6"
+            className="text-center"
           >
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900">
-              Understand Better,{' '}
-              <span className="bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text">
-                Learn Faster
-              </span>
+            <h2 className="text-3xl font-bold text-violet-600">
+              Briefly AI
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Transform complex texts into clear, concise summaries in your preferred language.
-            </p>
+            <p className="text-sm text-gray-600 mt-1">Your Global Companion for Student Life</p>
+          </motion.div>
+        </header>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Link 
-                href="/signup"
-                className="inline-block px-8 py-4 text-lg font-medium text-white rounded-full
-                  bg-gradient-to-r from-violet-600 to-indigo-600 
-                  hover:from-violet-700 hover:to-indigo-700
-                  transition-all duration-200 ease-out
-                  shadow-[0_0_20px_rgba(124,58,237,0.3)]
-                  hover:shadow-[0_0_25px_rgba(124,58,237,0.5)]
-                  transform hover:-translate-y-0.5"
+        {/* Content */}
+        <main className="flex-grow flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-[95vw] h-[75vh] mx-auto 
+              bg-white/10 backdrop-blur-md rounded-3xl
+              flex items-center justify-center"
+          >
+            <div className="text-center space-y-2">
+              <h1 className="text-6xl sm:text-7xl font-bold tracking-tight">
+                <span className="text-violet-600">
+                  Empower Your
+                </span>
+              </h1>
+              <h1 className="text-6xl sm:text-7xl font-bold tracking-tight">
+                <span className="text-violet-600">
+                  Student Journey
+                </span>
+              </h1>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto"
               >
-                Start Summarizing
-              </Link>
-            </motion.div>
+                Get help with anything, anywhere, anytime
+              </motion.p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24">
-              {[
-                {
-                  icon: <Globe2 className="w-6 h-6" />,
-                  title: 'Multilingual Support',
-                  description: 'Understand content in multiple languages'
-                },
-                {
-                  icon: <Brain className="w-6 h-6" />,
-                  title: 'AI-Powered',
-                  description: 'Advanced algorithms for accurate summaries'
-                },
-                {
-                  icon: <BookOpen className="w-6 h-6" />,
-                  title: 'Student Friendly',
-                  description: 'Perfect for academic readings and research'
-                }
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  className="p-6 rounded-2xl hover:bg-gray-50 transition-colors duration-200"
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="pt-8"
+              >
+                <Link 
+                  href="/signup"
+                  className="inline-flex items-center px-12 py-4 text-xl font-medium
+                    bg-white/20 backdrop-blur-sm rounded-full
+                    text-violet-600 border border-violet-600/30
+                    hover:bg-violet-600/10
+                    transition-all duration-300 ease-out
+                    shadow-[0_0_30px_rgba(124,58,237,0.2)]
+                    hover:shadow-[0_0_40px_rgba(124,58,237,0.3)]
+                    transform hover:-translate-y-0.5"
                 >
-                  <div className="w-12 h-12 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600 mb-4 mx-auto">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">
-                    {feature.description}
-                  </p>
-                </motion.div>
-              ))}
+                  Start Your Journey
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
-        </div>
-      </main>
-
-      {/* Minimal Footer */}
-      <footer className="absolute bottom-0 w-full py-6">
-        <div className="text-center text-gray-500 text-sm">
-          © 2024 Lumina
-        </div>
-      </footer>
+        </main>
+      </div>
     </div>
   );
 }

@@ -14,12 +14,6 @@ interface Message {
   timestamp?: number
 }
 
-// Add a new function to convert markdown to HTML
-const markdownToHtml = (content: string) => {
-  // For now, we'll just handle basic line breaks. You can expand this as needed.
-  return content.replace(/\n/g, '<br />')
-}
-
 export default function EnhancedChatbot() {
   const [inputText, setInputText] = useState('')
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -39,49 +33,9 @@ export default function EnhancedChatbot() {
     try {
       localStorage.setItem('chatMessages', JSON.stringify(messages))
     } catch (error) {
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        // If storage is full, try compressing or chunking the data
-        try {
-          // Split messages into multiple storage keys
-          const chunkSize = Math.floor(messages.length / 2)
-          const chunks = []
-          
-          for (let i = 0; i < messages.length; i += chunkSize) {
-            chunks.push(messages.slice(i, i + chunkSize))
-          }
-          
-          chunks.forEach((chunk, index) => {
-            localStorage.setItem(`chatMessages_${index}`, JSON.stringify(chunk))
-          })
-          
-          // Store the number of chunks
-          localStorage.setItem('chatMessages_chunks', String(chunks.length))
-        } catch (e) {
-          console.error('Failed to store messages in localStorage:', e)
-        }
-      }
+      console.error('Failed to store messages in localStorage:', error)
     }
   }, [messages])
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const chunksCount = localStorage.getItem('chatMessages_chunks')
-      if (chunksCount) {
-        try {
-          let allMessages: Message[] = []
-          for (let i = 0; i < parseInt(chunksCount); i++) {
-            const chunk = localStorage.getItem(`chatMessages_${i}`)
-            if (chunk) {
-              allMessages = [...allMessages, ...JSON.parse(chunk)]
-            }
-          }
-          setMessages(allMessages)
-        } catch (e) {
-          console.error('Failed to load chunked messages:', e)
-        }
-      }
-    }
-  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -164,51 +118,22 @@ export default function EnhancedChatbot() {
     }
   }
 
-  const clearHistory = () => {
-    setMessages([])
-    // Clear all chunks
-    const chunksCount = localStorage.getItem('chatMessages_chunks')
-    if (chunksCount) {
-      for (let i = 0; i < parseInt(chunksCount); i++) {
-        localStorage.removeItem(`chatMessages_${i}`)
-      }
-    }
-    localStorage.removeItem('chatMessages')
-    localStorage.removeItem('chatMessages_chunks')
-  }
-
-  const exportHistory = () => {
-    const data = JSON.stringify(messages, null, 2)
-    const blob = new Blob([data], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'chat-history.json'
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const importHistory = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        try {
-          const importedMessages = JSON.parse(e.target?.result as string)
-          setMessages(importedMessages)
-        } catch (error) {
-          setError('Failed to import chat history')
-        }
-      }
-      reader.readAsText(file)
-    }
-  }
-
   return (
-    <div className={`min-h-screen bg-white flex flex-col ${inter.className}`}>
-      <div className="flex-1 w-full max-w-4xl mx-auto flex flex-col p-4">
+    <div className={`min-h-screen flex flex-col ${inter.className} relative overflow-hidden`}>
+      {/* Spline Background */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <iframe 
+          src='https://my.spline.design/glassfluidpastelsemplification-8ca24cd1982a4a3a4580a85c0a70cab4/' 
+          frameBorder='0' 
+          width='100%' 
+          height='100%'
+          title="Decorative background animation"
+        />
+      </div>
+
+      <div className="relative z-10 flex-1 w-full max-w-4xl mx-auto flex flex-col p-4">
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+        <div className="flex-1 overflow-y-auto mb-4 space-y-4 bg-white/30 backdrop-blur-md rounded-xl p-6">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -218,7 +143,7 @@ export default function EnhancedChatbot() {
                 className={`max-w-[80%] rounded-lg p-4 ${
                   message.role === 'user'
                     ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-900'
+                    : 'bg-white/80 text-gray-900'
                 }`}
               >
                 {message.image && (
@@ -238,11 +163,11 @@ export default function EnhancedChatbot() {
         )}
 
         {/* Input Form */}
-        <form onSubmit={handleSubmit} className="relative">
+        <form onSubmit={handleSubmit} className="relative bg-white/50 backdrop-blur-md rounded-xl p-2">
           <div className="relative flex items-center">
             <label
               htmlFor="image-upload"
-              className="absolute left-4 p-1 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+              className="absolute left-4 p-1 text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
             >
               <ImageIcon className="h-5 w-5" />
               <input
@@ -255,7 +180,7 @@ export default function EnhancedChatbot() {
             </label>
             
             <textarea
-              className="w-full pl-14 pr-14 py-4 text-gray-900 bg-white rounded-xl border border-gray-300
+              className="w-full pl-14 pr-14 py-4 text-gray-900 bg-white/80 rounded-xl border border-gray-300
                        focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none 
                        transition-all resize-none min-h-[60px] max-h-[200px]"
               placeholder="Ask a question..."
@@ -273,7 +198,7 @@ export default function EnhancedChatbot() {
             <button
               type="submit"
               disabled={isLoading || (!inputText.trim() && !selectedImage)}
-              className="absolute right-4 p-1 text-blue-500 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:hover:text-blue-500"
+              className="absolute right-4 p-1 text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50 disabled:hover:text-blue-600"
             >
               {isLoading ? (
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -299,7 +224,7 @@ export default function EnhancedChatbot() {
           </div>
           
           {imagePreview && (
-            <div className="absolute -top-16 left-0 right-0 flex items-center justify-between p-2 bg-gray-100 rounded-lg">
+            <div className="absolute -top-16 left-0 right-0 flex items-center justify-between p-2 bg-white/80 backdrop-blur-sm rounded-lg">
               <img src={imagePreview} alt="Preview" className="h-12 w-12 object-cover rounded" />
               <button
                 type="button"
