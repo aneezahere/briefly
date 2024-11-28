@@ -70,10 +70,7 @@ export default function EnhancedChatbot() {
       role: 'user',
       content: inputText,
       timestamp: Date.now()
-    }
-    if (imagePreview) {
-      userMessage.image = imagePreview
-    }
+    
 
     setInputText('')
     setIsLoading(true)
